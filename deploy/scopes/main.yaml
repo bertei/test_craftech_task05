@@ -1,0 +1,54 @@
+name: Task05_CI
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  Docker-build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Docker build and push
+        uses: docker/build-push-action@v3
+        with:
+          file: Dockerfile
+          context: .
+          push: true
+          tags: bernaa77/nginx-academy:${{ github.run_id }} ##sets the image tag to the latest workflow run id
+  
+  Minikube-Helm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Minikube setup
+        uses: medyagh/setup-minikube@master
+      - name: Helm setup
+        uses: azure/setup-helm@v3
+        with:
+          version: '3.9.0'
+      - name: Setup Helm Chart
+        run:
+          helm upgrade --install nginx-academy chart/nginx-academy --values=deploy/scopes/main.yaml --set image.tag=${{ github.run_id }} --timeout "3m0s"
+      - name: Sleep for 30 seconds
+        uses: jakejarvis/wait-action@master
+          with:
+            time: '30s'
+      - name: List pods
+        run: kubectl get po
+      - name: Test service URLs
+        run: |
+          minikube service list
+          minikube service ${{ secrets.SERVICE_CHART_NAME }} --url
+          echo "------------------opening the service------------------"
+          curl $(minikube service ${{ secrets.SERVICE_CHART_NAME}} --url)
