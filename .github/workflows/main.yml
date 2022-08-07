@@ -52,3 +52,5 @@ jobs:
           minikube service ${{ secrets.SERVICE_CHART_NAME }} --url
           echo "------------------opening the service------------------"
           curl $(minikube service ${{ secrets.SERVICE_CHART_NAME}} --url)
+      - name: List pods
+        run: kubectl get po
