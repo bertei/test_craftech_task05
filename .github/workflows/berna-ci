@@ -3,7 +3,7 @@ name: Task05_CI
 on:
   push:
     branches:
-      - 'main'
+      - main
 
 jobs:
   Docker-build-push:
