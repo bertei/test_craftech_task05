@@ -42,7 +42,7 @@ jobs:
           helm upgrade --install nginx-academy chart/nginx-academy --values=deploy/scopes/main.yaml --set image.tag=${{ github.run_id }} --timeout "3m0s"
       - name: Sleep for 30 seconds
         uses: jakejarvis/wait-action@master
-          with:
+        with:
             time: '30s'
       - name: List pods
         run: kubectl get po
