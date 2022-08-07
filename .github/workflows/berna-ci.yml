@@ -39,15 +39,13 @@ jobs:
           version: '3.9.0'
       - name: Setup Helm Chart
         run:
-          helm upgrade --install nginx-academy chart/nginx-academy --values=deploy/scopes/main.yaml --set image.tag=${{ github.run_id }} --timeout "3m0s"
+          helm upgrade --install nginx-academy ./chart/nginx-academy --values=deploy/scopes/main.yaml --set image.tag=${{ github.run_id }} --timeout "3m0s"
       - name: Sleep for 30 seconds
         uses: jakejarvis/wait-action@master
         with:
             time: '30s'
       - name: List pods
         run: kubectl get po
-      - name: describe chart
-        run: minikube describe nginx-academy
       - name: Test service URLs
         run: |
           minikube service list
