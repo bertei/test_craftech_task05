@@ -46,7 +46,7 @@ jobs:
             time: '30s'
       - name: List pods
         run: kubectl get po
-      - name: -
+      - name: describe chart
         run: minikube describe nginx-academy
       - name: Test service URLs
         run: |
